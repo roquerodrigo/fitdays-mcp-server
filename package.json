@@ -1,16 +1,50 @@
 {
   "name": "fitdays-mcp-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "MCP server exposing the unofficial FitDays / iComon smart-scale API as tools (weight history, devices, users) for LLM clients.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "fitdays",
+    "icomon",
+    "smart-scale",
+    "body-composition",
+    "weight",
+    "bluetooth-scale"
+  ],
+  "license": "MIT",
+  "author": "Rodrigo Roque <rodrigogoncalvesroque@gmail.com>",
+  "homepage": "https://github.com/roquerodrigo/fitdays-mcp-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roquerodrigo/fitdays-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/roquerodrigo/fitdays-mcp-server/issues"
+  },
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "bin": {
     "fitdays-mcp-server": "dist/index.js"
   },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
+    "build:publish": "rm -rf dist && tsc",
     "start": "node dist/index.js",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "prepack": "npm run build:publish",
+    "prepublishOnly": "npm run lint"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -30,5 +64,7 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "private": true
+  "publishConfig": {
+    "access": "public"
+  }
 }
