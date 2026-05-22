@@ -1,6 +1,6 @@
 {
   "name": "fitdays-mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server exposing the unofficial FitDays / iComon smart-scale API as tools (weight history, devices, users) for LLM clients.",
   "keywords": [
     "mcp",
