@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.0.1...v1.0.2) (2026-05-25)
+
+
+### Documentation
+
+* add npm version badge ([9fb1b99](https://github.com/roquerodrigo/fitdays-mcp-server/commit/9fb1b9947a070c86626a8745c8d70176a38b42f0))
+* add npm version badge ([266a5c3](https://github.com/roquerodrigo/fitdays-mcp-server/commit/266a5c3cf2a3d9d4ec9e337c417f58750468be4f))
+
 ## [1.0.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.0.0...v1.0.1) (2026-05-22)
 
 
