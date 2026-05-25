@@ -1,5 +1,7 @@
 # fitdays-mcp-server
 
+[![npm](https://img.shields.io/npm/v/fitdays-mcp-server)](https://www.npmjs.com/package/fitdays-mcp-server)
+
 [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
 the unofficial [FitDays / iComon smart-scale API](https://github.com/roquerodrigo/fitdays-api)
 as tools that an LLM client (Claude Desktop, Claude Code, etc.) can call.
