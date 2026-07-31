@@ -1,0 +1,21 @@
+name: CI
+
+# No `tests` job: this repository has no test suite yet. Add one alongside a
+# `test` script rather than wiring the job up against nothing.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    uses: roquerodrigo/.github/.github/workflows/npm-lint.yml@v3
+
+  build:
+    needs: lint
+    uses: roquerodrigo/.github/.github/workflows/npm-build.yml@v3
