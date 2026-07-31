@@ -50,13 +50,20 @@ convention (tests next to source, `fitdays-api` mocked, never hitting real
 FitDays endpoints). If you add tests, wire up the `test` script in
 `package.json` to match that convention rather than inventing a new one.
 
-## CI — lint/build are not gated
+## CI
 
-`.github/workflows/` only has `release.yml` (release-please, runs on push to
-`main`) and `auto-assign.yml` (assigns PR author). **There is no CI workflow
-that runs `npm run lint` or `npm run build`/`test`** — despite `CODE_STYLE.md`
-saying those gates "mirror CI." Run them yourself before pushing; nothing
-else will catch a lint or type error pre-merge.
+`ci.yml` gates lint and build on push to `main` and on every PR, by calling
+the shared `npm-*` reusables from `roquerodrigo/.github`. Two things worth
+knowing:
+
+- The lint job runs `eslint` directly, **not** `npm run lint` — that script
+  carries `--fix`, so in CI it would rewrite files and pass on anything
+  auto-fixable.
+- Both jobs install with `npm ci`, which aborts when `package-lock.json` and
+  `package.json` disagree.
+
+There is no `tests` job because there is no suite yet (see above). Add it to
+`ci.yml` alongside the `test` script.
 
 ## Releasing
 
