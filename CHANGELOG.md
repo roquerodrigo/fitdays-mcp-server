@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.3](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.0.2...v1.0.3) (2026-08-03)
+
+
+### Bug Fixes
+
+* **build:** declare the node type definitions explicitly ([c5e87f4](https://github.com/roquerodrigo/fitdays-mcp-server/commit/c5e87f4d21b9b8045a01ede4adb3167980392d0b))
+
+
+### Documentation
+
+* add CLAUDE.md ([6661122](https://github.com/roquerodrigo/fitdays-mcp-server/commit/6661122508cca3958cd3ab11211895f78efce933))
+
 ## [1.0.2](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.0.1...v1.0.2) (2026-05-25)
 
 
