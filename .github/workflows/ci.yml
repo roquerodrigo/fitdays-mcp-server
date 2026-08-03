@@ -1,21 +1,30 @@
 name: CI
 
-# No `tests` job: this repository has no test suite yet. Add one alongside a
-# `test` script rather than wiring the job up against nothing.
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
 jobs:
   lint:
-    uses: roquerodrigo/.github/.github/workflows/npm-lint.yml@v3
+    uses: roquerodrigo/workflows/.github/workflows/node-lint.yml@main
 
   build:
     needs: lint
-    uses: roquerodrigo/.github/.github/workflows/npm-build.yml@v3
+    uses: roquerodrigo/workflows/.github/workflows/node-build.yml@main
+
+  update-pr-branch:
+    if: github.event_name == 'pull_request'
+    needs: [lint, build]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: roquerodrigo/workflows/.github/workflows/update-pr-branch.yml@main
