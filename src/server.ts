@@ -13,7 +13,7 @@ const summarizeUser = (u: User) => ({
   birthday: u.birthday,
   height_cm: u.height,
   nickname: u.nickname,
-  sex: u.sex === 0 ? 'female' : 'male',
+  sex: u.sex === 0 ? 'male' : 'female',
   suid: u.suid,
   target_weight_kg: u.target_weight,
   uid: u.uid,
