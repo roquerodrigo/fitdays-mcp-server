@@ -1,9 +1,9 @@
-import type { User, WeightRecord } from 'fitdays-api'
-
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
 import type { FitDaysSession } from './fitdays.js'
+
+import { summarizeUser, summarizeWeight } from './type.js'
 
 const json = (value: unknown) => ({
   content: [{ text: JSON.stringify(value, null, 2), type: 'text' as const }],
@@ -11,36 +11,17 @@ const json = (value: unknown) => ({
 
 const joinDescriptionLines = (lines: readonly string[]): string => lines.join('\n')
 
-const summarizeUser = (u: User) => ({
-  birthday: u.birthday,
-  height_cm: u.height,
-  nickname: u.nickname,
-  sex: u.sex === 0 ? 'female' : 'male',
-  suid: u.suid,
-  target_weight_kg: u.target_weight,
-  uid: u.uid,
-})
-
-const summarizeWeight = (r: WeightRecord) => ({
-  bfr_pct: r.bfr,
-  bm_kg: r.bm,
-  bmi: r.bmi,
-  bmr_kcal: r.bmr,
-  bodyage: r.bodyage,
-  data_id: r.data_id,
-  is_deleted: r.is_deleted,
-  measured_at: new Date(r.measured_time * 1000).toISOString(),
-  measured_time: r.measured_time,
-  pp_pct: r.pp,
-  rom_pct: r.rom,
-  sfr_pct: r.sfr,
-  suid: r.suid,
-  uid: r.uid,
-  uvi: r.uvi,
-  vwc_pct: r.vwc,
-  weight_kg: r.weight_kg,
-  weight_lb: r.weight_lb,
-})
+const extensionDataDescriptionLines = [
+  '`ext_data` contains the measured person\'s context and FitDays reference values for interpreting the weight metrics. Treat these as informational rather than authoritative, and adjust them to the person\'s actual situation.',
+  'Context fields describe the person and measurement state, including `age`, `height`, `sex` (`female` or `male`), and `onlyMeasureWeight` (whether the record contains weight only).',
+  'Range and standard fields provide reference targets: `Min` and `Max` define the reference range, while `Standard` is the recommended value. They include body-fat mass, body-fat percentage, BMI, basal metabolic rate, bone mass, muscle mass, skeletal muscle mass, protein mass, water mass, and weight fields.',
+  'Control fields indicate the suggested adjustment toward the corresponding `Standard` value, including `bfmControl` (body-fat mass), `ffmControl` (fat-free mass), and `weightControl` (weight).',
+  'Fat-free-mass reference fields provide the recommended fat-free mass, including `ffmStandard`.',
+  'Index fields provide skeletal-muscle indexing, including `smi` (skeletal muscle index).',
+  'Classification fields describe body-composition status, including `bodyScore`, `bodyType`, and `obesityDegree`.',
+  'Target fields describe target body-composition values, including `targetWeight`, `targetBodyfatMass`, and `targetSMMMass`; unavailable target-mass values are `null`.',
+  'Device fields identify the source device, including `deviceModelExt`, `deviceNameExt`, and `deviceSoftwareVer`.',
+] as const
 
 export const buildServer = (session: FitDaysSession): McpServer => {
   const server = new McpServer(
@@ -106,12 +87,15 @@ export const buildServer = (session: FitDaysSession): McpServer => {
       description: joinDescriptionLines([
         'Return body-composition / weight measurements, optionally filtered by sub-user (`suid`) and time window.',
         'Data is fetched lazily when no valid cache exists and stored in a global cache shared by all tools for 5 minutes; subsequent queries use that cached snapshot until it expires. Use `refresh_sync` if you are within the 5-minute cache window and fresher data is required.',
-        'Returns a list ordered newest first. Each measurement contains `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, and `is_deleted`.',
+        'Returns a list ordered newest first. Each measurement contains `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `rosm_pct` (skeletal muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, `is_deleted`, and `ext_data`',
+        ...extensionDataDescriptionLines,
         'By default includes tombstoned records (`is_deleted: 1`); set `include_deleted: false` to hide them.',
       ]),
       inputSchema: {
         include_deleted: z.boolean().optional()
           .describe('Include records with `is_deleted: 1` (server-side tombstones). Default: true.'),
+        include_ext_data: z.boolean().optional()
+          .describe('Include the `ext_data` reference/context object. Set to false when only the measurement data is needed or the context already contains sufficient `ext_data` information; useful for plotting historical trends. Default: true.'),
         limit: z.number().int().positive().max(1000).optional()
           .describe('Maximum number of records (newest first). Default: 100.'),
         since: z.number().int().nonnegative().optional()
@@ -123,8 +107,9 @@ export const buildServer = (session: FitDaysSession): McpServer => {
       },
       title: 'Weight history',
     },
-    async ({ include_deleted, limit, since, suid, until }) => {
+    async ({ include_deleted, include_ext_data, limit, since, suid, until }) => {
       const includeDeleted = include_deleted ?? true
+      const includeExtensionData = include_ext_data ?? true
       const data = await session.getSync()
       const records = data.weight_list
         .filter((r) => includeDeleted || r.is_deleted === 0)
@@ -133,7 +118,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
         .filter((r) => until === undefined || r.measured_time <= until)
         .sort((a, b) => b.measured_time - a.measured_time)
         .slice(0, limit ?? 100)
-        .map(summarizeWeight)
+        .map((weightRecord) => summarizeWeight(weightRecord, includeExtensionData))
       return json(records)
     },
   )
@@ -144,27 +129,31 @@ export const buildServer = (session: FitDaysSession): McpServer => {
       description: joinDescriptionLines([
         'Return the most recent body-composition / weight measurement in the current global cache, optionally for a single sub-user(suid).',
         'Data is fetched lazily when no valid cache exists and stored in a global cache shared by all tools for 5 minutes; subsequent queries use that cached snapshot until it expires. Use `refresh_sync` if you are within the 5-minute cache window and fresher data is required.',
-        'Returns exactly one measurement containing `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, and `is_deleted`, or `null` if no matching measurement exists.',
+        'Returns exactly one measurement containing `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `rosm_pct` (skeletal muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, `is_deleted`, and `ext_data`, or `null` if no matching measurement exists.',
+        ...extensionDataDescriptionLines,
         'By default ignores tombstoned records (`is_deleted: 1`).',
       ]),
       inputSchema: {
         include_deleted: z.boolean().optional()
           .describe('Include records with `is_deleted: 1`. Default: false.'),
+        include_ext_data: z.boolean().optional()
+          .describe('Include the `ext_data` reference/context object. Set to false to omit it. Default: true.'),
         suid: z.number().int().optional()
           .describe('Sub-user id resolved by `list_users`. Omit to return the latest record across all users.'),
       },
       title: 'Latest weight',
     },
-    async ({ include_deleted, suid }) => {
+    async ({ include_deleted, include_ext_data, suid }) => {
       const includeDeleted = include_deleted ?? false
+      const includeExtensionData = include_ext_data ?? true
       const data = await session.getSync()
       const latest = data.weight_list
         .filter((r) => includeDeleted || r.is_deleted === 0)
         .filter((r) => suid === undefined || r.suid === suid)
-        .reduce<null | WeightRecord>((acc, r) => {
+        .reduce<(typeof data.weight_list)[number] | null>((acc, r) => {
           return acc === null || r.measured_time > acc.measured_time ? r : acc
         }, null)
-      return json(latest ? summarizeWeight(latest) : null)
+      return json(latest ? summarizeWeight(latest, includeExtensionData) : null)
     },
   )
 
