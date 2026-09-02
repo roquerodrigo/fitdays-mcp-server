@@ -2,6 +2,8 @@
 
 [![npm](https://img.shields.io/npm/v/fitdays-mcp-server)](https://www.npmjs.com/package/fitdays-mcp-server)
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white&style=for-the-badge)](https://github.com/sponsors/roquerodrigo)
+
 [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
 the unofficial [FitDays / iComon smart-scale API](https://github.com/roquerodrigo/fitdays-api)
 as tools that an LLM client (Claude Desktop, Claude Code, etc.) can call.
@@ -66,6 +68,10 @@ npm install
 npm run build
 FITDAYS_EMAIL=… FITDAYS_PASSWORD=… npm start
 ```
+
+## Support
+
+This MCP server is built and maintained on personal time, on hardware bought for the purpose. If it is useful to you, consider [sponsoring the work](https://github.com/sponsors/roquerodrigo) — it keeps the devices, the testing and the releases coming.
 
 ## License
 
