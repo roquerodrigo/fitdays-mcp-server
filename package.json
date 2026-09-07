@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",
-    "fitdays-api": "1.0.3",
+    "fitdays-api": "1.0.4",
     "zod": "4.4.3"
   },
   "devDependencies": {
