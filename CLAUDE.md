@@ -15,9 +15,11 @@ that aren't obvious from skimming source.
 
 ## Structure
 
-Everything fits in three files: `src/index.ts` (entry point / `bin` script),
+Three top-level files: `src/index.ts` (entry point / `bin` script),
 `src/fitdays.ts` (`FitDaysSession`, wrapping the `fitdays-api` SDK), and
-`src/server.ts` (builds the `McpServer`, registers the 5 tools). `dist/` is
+`src/server.ts` (builds the `McpServer`, registers the 5 tools). The
+`src/summaries/` modules turn SDK records into the LLM-facing response
+shapes (user, weight, and the weight `ext_data` context). `dist/` is
 gitignored compiled output — what `bin`/`main`/`exports` in `package.json`
 point at. There's no `tools/`/`prompts/` subdirectory yet; split further only
 once file count grows.
@@ -83,6 +85,10 @@ OIDC (npm Trusted Publisher, no token in repo secrets).
   `is_deleted: 1` instead of removing them server-side, so history should
   show them by default); `get_latest_weight` defaults to `false` (you
   usually want the current, non-tombstoned reading).
+- **`include_ext_data` defaults differ by tool too**: `get_latest_weight`
+  defaults to `true` (one record, the FitDays reference ranges help interpret
+  it); `get_weight_history` defaults to `false` (up to 1000 records, and the
+  ~45-field `ext_data` object would dominate the payload on trend queries).
 - **Never `console.log`** — stdout is the JSON-RPC channel; any stray write
   corrupts the protocol stream. Diagnostics go to `console.error` (stderr),
   prefixed `[debug]`/`[info]`/`[warn]`/`[error]` per `CODE_STYLE.md`.

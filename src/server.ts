@@ -1,9 +1,12 @@
+import type { WeightRecord } from 'fitdays-api'
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
 import type { FitDaysSession } from './fitdays.js'
 
-import { summarizeUser, summarizeWeight } from './type.js'
+import { summarizeUser } from './summaries/user-summary.js'
+import { summarizeWeight } from './summaries/weight-summary.js'
 
 const json = (value: unknown) => ({
   content: [{ text: JSON.stringify(value, null, 2), type: 'text' as const }],
@@ -63,7 +66,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
     'list_devices',
     {
       description: joinDescriptionLines([
-        'List bounded devices under the FitDays account.',
+        'List the devices bound to the FitDays account.',
         'Returns `device_id` (FitDays device identifier), `name`, `model`, `mac` (MAC address), and `firmware_ver` (firmware version) for each device.',
       ]),
       inputSchema: {},
@@ -87,7 +90,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
       description: joinDescriptionLines([
         'Return body-composition / weight measurements, optionally filtered by sub-user (`suid`) and time window.',
         'Data is fetched lazily when no valid cache exists and stored in a global cache shared by all tools for 5 minutes; subsequent queries use that cached snapshot until it expires. Use `refresh_sync` if you are within the 5-minute cache window and fresher data is required.',
-        'Returns a list ordered newest first. Each measurement contains `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `rosm_pct` (skeletal muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, `is_deleted`, and `ext_data`',
+        'Returns a list ordered newest first. Each measurement contains `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `rosm_pct` (skeletal muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, and `is_deleted`. Set `include_ext_data: true` to also return `ext_data` for each record.',
         ...extensionDataDescriptionLines,
         'By default includes tombstoned records (`is_deleted: 1`); set `include_deleted: false` to hide them.',
       ]),
@@ -95,7 +98,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
         include_deleted: z.boolean().optional()
           .describe('Include records with `is_deleted: 1` (server-side tombstones). Default: true.'),
         include_ext_data: z.boolean().optional()
-          .describe('Include the `ext_data` reference/context object. Set to false when only the measurement data is needed or the context already contains sufficient `ext_data` information; useful for plotting historical trends. Default: true.'),
+          .describe('Include the `ext_data` reference/context object on each record. Leave it off when only the measurements are needed, such as for plotting trends. Default: false.'),
         limit: z.number().int().positive().max(1000).optional()
           .describe('Maximum number of records (newest first). Default: 100.'),
         since: z.number().int().nonnegative().optional()
@@ -109,7 +112,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
     },
     async ({ include_deleted, include_ext_data, limit, since, suid, until }) => {
       const includeDeleted = include_deleted ?? true
-      const includeExtensionData = include_ext_data ?? true
+      const includeExtensionData = include_ext_data ?? false
       const data = await session.getSync()
       const records = data.weight_list
         .filter((r) => includeDeleted || r.is_deleted === 0)
@@ -127,7 +130,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
     'get_latest_weight',
     {
       description: joinDescriptionLines([
-        'Return the most recent body-composition / weight measurement in the current global cache, optionally for a single sub-user(suid).',
+        'Return the most recent body-composition / weight measurement in the current global cache, optionally for a single sub-user (`suid`).',
         'Data is fetched lazily when no valid cache exists and stored in a global cache shared by all tools for 5 minutes; subsequent queries use that cached snapshot until it expires. Use `refresh_sync` if you are within the 5-minute cache window and fresher data is required.',
         'Returns exactly one measurement containing `weight_kg`, `weight_lb`, `bmi`, `bfr_pct` (body fat percentage), `rom_pct` (muscle percentage), `rosm_pct` (skeletal muscle percentage), `vwc_pct` (body water percentage), `pp_pct` (protein percentage), `sfr_pct` (subcutaneous fat percentage), `uvi` (visceral fat index), `bm_kg` (bone mass), `bmr_kcal` (basal metabolic rate), `bodyage` (body age), `measured_at` (ISO 8601 timestamp), `measured_time` (Unix-seconds timestamp), `data_id`, `suid`, `uid`, `is_deleted`, and `ext_data`, or `null` if no matching measurement exists.',
         ...extensionDataDescriptionLines,
@@ -150,7 +153,7 @@ export const buildServer = (session: FitDaysSession): McpServer => {
       const latest = data.weight_list
         .filter((r) => includeDeleted || r.is_deleted === 0)
         .filter((r) => suid === undefined || r.suid === suid)
-        .reduce<(typeof data.weight_list)[number] | null>((acc, r) => {
+        .reduce<null | WeightRecord>((acc, r) => {
           return acc === null || r.measured_time > acc.measured_time ? r : acc
         }, null)
       return json(latest ? summarizeWeight(latest, includeExtensionData) : null)

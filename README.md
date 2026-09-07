@@ -17,8 +17,8 @@ and serves the data as structured tool responses.
 | --- | --- |
 | `list_users` | Sub-users (people) registered under the account. |
 | `list_devices` | FitDays-compatible devices known to the account. |
-| `get_weight_history` | Body-composition / weight measurements. Filters: `suid`, `since`, `until`, `limit`, `include_deleted` (default `true` — the FitDays mobile app marks edited records `is_deleted: 1` rather than removing them server-side). |
-| `get_latest_weight` | Most recent weight measurement (filter by `suid`; `include_deleted` defaults to `false`). |
+| `get_weight_history` | Body-composition / weight measurements. Filters: `suid`, `since`, `until`, `limit`, `include_deleted` (default `true` — the FitDays mobile app marks edited records `is_deleted: 1` rather than removing them server-side), `include_ext_data` (default `false` — adds the FitDays reference ranges, targets and body-type classification to each record). |
+| `get_latest_weight` | Most recent weight measurement (filter by `suid`; `include_deleted` defaults to `false`; `include_ext_data` defaults to `true`). |
 | `refresh_sync` | Force-refresh the cached sync data. Returns counts including the `active` / `deleted` / `total` split for weight records. |
 
 ## Install
