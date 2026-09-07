@@ -78,8 +78,9 @@ OIDC (npm Trusted Publisher, no token in repo secrets).
 
 - **MCP server's own `version` is hardcoded** in `src/server.ts`
   (`new McpServer({ name: 'fitdays-mcp-server', version: '1.0.0' })`) and is
-  *not* kept in sync with `package.json`'s `version` (currently `1.0.3`,
-  release-please-managed). Don't assume they match.
+  *not* kept in sync with `package.json`'s `version` — that one is
+  release-please-managed and moves with each release while the hardcoded one
+  stays `1.0.0`. Don't assume they match.
 - **`include_deleted` defaults differ by tool**: `get_weight_history`
   defaults to `true` (FitDays' mobile app marks edited records
   `is_deleted: 1` instead of removing them server-side, so history should
