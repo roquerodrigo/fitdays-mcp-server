@@ -7,6 +7,8 @@ into a FitDays account once, caches a full sync in memory (5-minute TTL), and
 serves the data as structured tool responses over stdio.
 
 Published to npm as `fitdays-mcp-server`; installed/run via `npx fitdays-mcp-server`.
+Also published as a Docker image at `ghcr.io/roquerodrigo/fitdays-mcp-server`
+(see "Docker image" below).
 
 **Read `CODE_STYLE.md` before adding or restructuring code** — it is the
 detailed style guide (naming, typing, imports, logging, error format,
@@ -33,6 +35,21 @@ FITDAYS_EMAIL=… FITDAYS_PASSWORD=… npm start      # node dist/index.js
 ```
 
 `FITDAYS_REGION` is optional (defaults to `us`).
+
+## Docker image
+
+`Dockerfile` is a two-stage build: the first stage runs `npm ci` + `npm pack`
+on the build platform, the second installs that tarball globally next to
+`supergateway` (pinned) and runs as the `node` user. The image's default
+command bridges the stdio server to Streamable HTTP on port 8000 (`/mcp`,
+health at `/healthz`); passing `fitdays-mcp-server` as the container command
+gives plain stdio. `--stateful` on the gateway is deliberate — stateless
+mode leaks one child process per tool call.
+
+```sh
+docker build -t fitdays-mcp-server:dev .
+docker run --rm -e FITDAYS_EMAIL=… -e FITDAYS_PASSWORD=… -p 8000:8000 fitdays-mcp-server:dev
+```
 
 ## Lint
 
@@ -67,12 +84,18 @@ knowing:
 There is no `tests` job because there is no suite yet (see above). Add it to
 `ci.yml` alongside the `test` script.
 
+The `docker` job builds the image (single platform, no push) so a broken
+`Dockerfile` fails the PR instead of the release.
+
 ## Releasing
 
 `release-please` owns `package.json`'s `version` and `CHANGELOG.md` — driven
 by Conventional Commits (see `CODE_STYLE.md` for the type→bump table). Don't
 hand-edit the version. Merging the release-please PR publishes to npm via
-OIDC (npm Trusted Publisher, no token in repo secrets).
+OIDC (npm Trusted Publisher, no token in repo secrets) and pushes the
+multi-arch Docker image to ghcr, tagged `<version>`, `<major>.<minor>`,
+`<major>` and `latest` from the same release tag (`publish-docker` job in
+`release.yml`, authenticated with `GITHUB_TOKEN`).
 
 ## Gotchas
 
