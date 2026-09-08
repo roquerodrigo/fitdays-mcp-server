@@ -59,6 +59,60 @@ Add it to your MCP client config (`claude_desktop_config.json` or
 }
 ```
 
+## Run with Docker
+
+A multi-arch image (`linux/amd64`, `linux/arm64`) is published to GitHub
+Container Registry on every release, tagged with the release version
+(`1.2.0`, `1.2`, `1`) and `latest`:
+
+```sh
+docker run -d --name fitdays-mcp \
+  -e FITDAYS_EMAIL=you@example.com \
+  -e FITDAYS_PASSWORD=your-password \
+  -p 8000:8000 \
+  ghcr.io/roquerodrigo/fitdays-mcp-server:latest
+```
+
+The container serves the server over
+[Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http)
+at `http://localhost:8000/mcp`, with a health endpoint at `/healthz`, so
+remote MCP clients can connect to it directly:
+
+```json
+{
+  "mcpServers": {
+    "fitdays": {
+      "type": "http",
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+Credentials are read only from the environment; nothing is baked into the
+image. To use the stdio transport instead, run the server binary as the
+container command:
+
+```json
+{
+  "mcpServers": {
+    "fitdays": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "FITDAYS_EMAIL", "-e", "FITDAYS_PASSWORD",
+        "ghcr.io/roquerodrigo/fitdays-mcp-server:latest",
+        "fitdays-mcp-server"
+      ],
+      "env": {
+        "FITDAYS_EMAIL": "you@example.com",
+        "FITDAYS_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
 ## Run from source
 
 ```sh
