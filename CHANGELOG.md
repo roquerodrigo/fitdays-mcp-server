@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.1.0...v1.2.0) (2026-09-08)
+
+
+### Features
+
+* **docker:** publish container image to GitHub Container Registry ([65f83f1](https://github.com/roquerodrigo/fitdays-mcp-server/commit/65f83f1a0a9c5ff2e514ae9b256e515b68a75e7b))
+
+
+### Documentation
+
+* refresh CLAUDE.md ([fff3d63](https://github.com/roquerodrigo/fitdays-mcp-server/commit/fff3d630cc76d1cfe8ec3152633ef6e9ce0af32e))
+
 ## [1.1.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.0.3...v1.1.0) (2026-09-07)
 
 
