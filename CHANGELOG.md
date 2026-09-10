@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.0...v1.2.1) (2026-09-10)
+
+
+### Dependencies
+
+* **deps:** bump hono from 4.13.1 to 4.13.7 ([143207e](https://github.com/roquerodrigo/fitdays-mcp-server/commit/143207e5c4d32874e14fc09e1742d01370ac8485))
+
 ## [1.2.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.1.0...v1.2.0) (2026-09-08)
 
 
