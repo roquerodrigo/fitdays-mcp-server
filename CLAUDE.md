@@ -72,8 +72,8 @@ FitDays endpoints). If you add tests, wire up the `test` script in
 ## CI
 
 `ci.yml` gates lint and build on push to `main` and on every PR, by calling
-the shared `npm-*` reusables from `roquerodrigo/.github`. Two things worth
-knowing:
+the shared `node-lint`/`node-build` reusables from `roquerodrigo/workflows`.
+Two things worth knowing:
 
 - The lint job runs `eslint` directly, **not** `npm run lint` — that script
   carries `--fix`, so in CI it would rewrite files and pass on anything
