@@ -119,9 +119,7 @@ multi-arch Docker image to ghcr, tagged `<version>`, `<major>.<minor>`,
 - **`FitDaysSession.getClient` dedupes concurrent logins** via a shared
   `loginPromise` — if you touch that method, preserve the single-flight
   behavior or concurrent tool calls will trigger duplicate logins.
-- Repo is **public**, but `main` has **no GitHub branch protection or
-  ruleset configured** — nothing technically blocks a direct push. The
-  PR-per-feature workflow (visible in `git log` as merge commits) is a
-  self-imposed convention from the user's global git conventions, not a
-  repo-enforced gate. Follow it anyway: branch, PR, merge commit — don't
-  push straight to `main`, and update `main` from remote before branching.
+- Repo is **public with branch protection** on `main` (reconciled by the
+  shared repository policy in `roquerodrigo/workflows`): land changes through
+  a PR with green CI, merged with **rebase merge only** — merge commits and
+  squash are disabled. Update `main` from remote before branching.
