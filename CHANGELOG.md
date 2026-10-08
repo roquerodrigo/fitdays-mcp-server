@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.0...v1.2.1) (2026-10-08)
+
+
+### Dependencies
+
+* **deps:** bump @modelcontextprotocol/sdk from 1.30.0 to 1.31.0 ([0c0b519](https://github.com/roquerodrigo/fitdays-mcp-server/commit/0c0b51991697ee9284a9f240f61cae7c23b0f2b4))
+* **deps:** bump fast-uri from 3.1.7 to 3.1.8 ([bae7187](https://github.com/roquerodrigo/fitdays-mcp-server/commit/bae7187f9d124ceabdd10211916aae936cda91b6))
+* **deps:** bump hono from 4.13.1 to 4.13.7 ([143207e](https://github.com/roquerodrigo/fitdays-mcp-server/commit/143207e5c4d32874e14fc09e1742d01370ac8485))
+* **deps:** bump ip-address from 10.5.0 to 10.7.3 ([3c83d6d](https://github.com/roquerodrigo/fitdays-mcp-server/commit/3c83d6dcfc6aa0bccbd80727d872a94bbb7d944a))
+* **deps:** bump proxy-addr from 2.0.7 to 2.0.8 ([7a4e26f](https://github.com/roquerodrigo/fitdays-mcp-server/commit/7a4e26f1e10a4fe7fcd0db4cdcea810922dbceb3))
+* **deps:** bump the github-actions group with 3 updates ([6734290](https://github.com/roquerodrigo/fitdays-mcp-server/commit/67342900709af6ee03bad162dec8b0d42559bce3))
+
+
+### Development Dependencies
+
+* **deps-dev:** bump brace-expansion from 5.0.7 to 5.0.12 ([5389e4a](https://github.com/roquerodrigo/fitdays-mcp-server/commit/5389e4a972de133ac0e402cbd162326d2ad223bf))
+
+
+### Documentation
+
+* refresh CLAUDE.md ([a12ad0a](https://github.com/roquerodrigo/fitdays-mcp-server/commit/a12ad0afb5129b8897ef7abfa2a10897f48a1647))
+* refresh CLAUDE.md ([d9a5fe9](https://github.com/roquerodrigo/fitdays-mcp-server/commit/d9a5fe9233b810174ee496385bd421f00732a0d7))
+
 ## [1.2.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.1.0...v1.2.0) (2026-09-08)
 
 
