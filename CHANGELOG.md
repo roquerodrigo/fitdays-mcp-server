@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.0...v1.2.1) (2026-10-26)
+
+
+### Miscellaneous Chores
+
+* **release:** keep only user-facing changes in the changelog ([e375984](https://github.com/roquerodrigo/fitdays-mcp-server/commit/e375984a1aea7801046f573395bd736d42a4f039))
+
 ## [1.2.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.1.0...v1.2.0) (2026-09-08)
 
 
