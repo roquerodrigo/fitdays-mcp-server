@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.0...v1.2.1) (2026-11-03)
+
+### Improvements
+
+- Updated the MCP SDK dependency to version 1.31.0. ([#79](https://github.com/roquerodrigo/fitdays-mcp-server/pull/79))
+
 ## [1.2.0](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.1.0...v1.2.0) (2026-09-08)
 
 
