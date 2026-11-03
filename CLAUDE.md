@@ -89,9 +89,9 @@ The `docker` job builds the image (single platform, no push) so a broken
 
 ## Releasing
 
-`release-please` owns `package.json`'s `version` and `CHANGELOG.md` — driven
+Release Autopilot owns `package.json`'s `version` and `CHANGELOG.md` — driven
 by Conventional Commits (see `CODE_STYLE.md` for the type→bump table). Don't
-hand-edit the version. Merging the release-please PR publishes to npm via
+hand-edit the version. Merging the release PR publishes to npm via
 OIDC (npm Trusted Publisher, no token in repo secrets) and pushes the
 multi-arch Docker image to ghcr, tagged `<version>`, `<major>.<minor>`,
 `<major>` and `latest` from the same release tag (`publish-docker` job in
@@ -102,7 +102,7 @@ multi-arch Docker image to ghcr, tagged `<version>`, `<major>.<minor>`,
 - **MCP server's own `version` is hardcoded** in `src/server.ts`
   (`new McpServer({ name: 'fitdays-mcp-server', version: '1.0.0' })`) and is
   *not* kept in sync with `package.json`'s `version` — that one is
-  release-please-managed and moves with each release while the hardcoded one
+  managed by Release Autopilot and moves with each release while the hardcoded one
   stays `1.0.0`. Don't assume they match.
 - **`include_deleted` defaults differ by tool**: `get_weight_history`
   defaults to `true` (FitDays' mobile app marks edited records
