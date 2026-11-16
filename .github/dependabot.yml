@@ -17,6 +17,13 @@ updates:
       prefix: "deps"
       prefix-development: "deps-dev"
       include: "scope"
+    ignore:
+      # typescript-eslint does not support TypeScript 7 yet
+      - dependency-name: "typescript"
+        versions: [">= 7"]
+      # the Docker image runs on Node 26
+      - dependency-name: "@types/node"
+        versions: [">= 27"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
