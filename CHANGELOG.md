@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.2](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.1...v1.2.2) (2026-11-25)
+
+### Improvements
+
+- Updated the bundled Model Context Protocol SDK to 1.32.2 and zod to 4.6.7. ([#95](https://github.com/roquerodrigo/fitdays-mcp-server/pull/95))
+
 ## [1.2.1](https://github.com/roquerodrigo/fitdays-mcp-server/compare/v1.2.0...v1.2.1) (2026-11-03)
 
 ### Improvements
